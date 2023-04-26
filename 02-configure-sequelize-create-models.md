@@ -44,6 +44,20 @@ DEVELOPMENT_DATABASE_PASSWORD="password"
 DEVELOPMENT_DATABASE_NAME="database_name"
 ```
 
+Now, in the `models/index.js` modify this line:
+
+```javascript
+const config = require(__dirname + '/../config/config.json')[env];
+```
+
+to
+
+```javascript
+const config = require(__dirname + '/../config/config.js')[env];
+```
+
+Just a two character change to reflect the filename we modified.
+
 **Step 2.3: Create the models**
 
 We will now create the models for `baskets`, `items`, `users`, and `orders`. Run the following commands to generate the required models:
