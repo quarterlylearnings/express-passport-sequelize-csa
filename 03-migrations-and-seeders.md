@@ -303,3 +303,5 @@ npx sequelize-cli db:seed --seed seeders/YYYYMMDDHHmmss-demo-order-baskets.js
 With the migrations applied and the seed data in place, we can now proceed to implement the authentication and expose the RESTful API endpoints for our resources.
 
 If you haven't already, you should take a break now.
+
+[Next Section](04-implementing-authentication.md)

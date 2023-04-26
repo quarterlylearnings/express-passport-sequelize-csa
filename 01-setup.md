@@ -67,5 +67,5 @@ You should now have a basic Express.js application generated, and the required d
 npm start
 ```
 
-With our project set up, we can proceed to the next section.
+With our project set up, we can proceed to the [next section](02-configure-sequelize-create-models.md).
 

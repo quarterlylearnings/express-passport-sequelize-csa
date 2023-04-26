@@ -163,3 +163,5 @@ app.use('/auth', authRouter);
 With this setup, we have implemented the authentication using Passport.js. Users can now register and log in using their username and password.
 
 In the next section, we will create RESTful API endpoints for our resources.
+
+[Next Section](05-restful-endpoints.md)

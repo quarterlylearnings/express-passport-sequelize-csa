@@ -117,3 +117,4 @@ By configuring the models with associations we have used JavaScript to create a 
 
 Our next step is running migrations to create the database schema which will actually modify the database. Then we will seed the database with data.
 
+[Next Section](03-migrations-and-seeders.md)
