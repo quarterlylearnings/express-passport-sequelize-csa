@@ -33,12 +33,9 @@ const { Basket, BasketItem, Item } = require("../models");
 
 // Create a new basket
 router.post("/", async (req, res) => {
+  const { name, price } = req.body;
   try {
-    const newBasket = {
-      name: req.body.name,
-      price: req.body.price,
-    };
-    const basket = await Basket.create(newBasket);
+    const basket = await Basket.create({ name, price });
     res.status(201).json(basket);
   } catch (error) {
     res.status(500).json({ message: "Error creating basket", error });
