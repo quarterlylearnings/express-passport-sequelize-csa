@@ -14,7 +14,7 @@ Create new route files for each resource in the `routes` directory:
 For each file, add the basic structure for an Express router:
 
 ```javascript
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Add your resource-specific routes here
@@ -29,47 +29,60 @@ Add the necessary CRUD operations to each router file, using the Sequelize model
 For example, in `routes/baskets.js`, add the following CRUD operations:
 
 ```javascript
-const { Basket, BasketItem, Item } = require('../models');
+const { Basket, BasketItem, Item } = require("../models");
 
 // Create a new basket
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const basket = await Basket.create(req.body);
+    const newBasket = {
+      name: req.body.name,
+      price: req.body.price,
+    };
+    const basket = await Basket.create(newBasket);
     res.status(201).json(basket);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating basket', error });
+    res.status(500).json({ message: "Error creating basket", error });
   }
 });
 
 // Get all baskets, including associated items
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const baskets = await Basket.findAll(); // how can we include the ITEMS associated with the baskets in this response?
     res.json(baskets);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving baskets', error });
+    res.status(500).json({ message: "Error retrieving baskets", error });
   }
 });
 
 // Get a specific basket by ID, including associated items
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const basket = await Basket.findByPk(req.params.id); // how can we include the ITEMS associated with the baskets in this response?
 
     if (!basket) {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     } else {
       res.json(basket);
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving basket', error });
+    res.status(500).json({ message: "Error retrieving basket", error });
   }
 });
 
 // Update a basket by ID
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
+  const { name, price } = req.body;
+
   try {
-    const [updated] = await Basket.update(req.body, {
+    const newBasket = {};
+    if (name !== undefined) {
+      newBasket.name = name;
+    }
+    if (price !== undefined) {
+      newBasket.price = price;
+    }
+    const [updated] = await Basket.update(newBasket, {
       where: { id: req.params.id },
     });
 
@@ -77,27 +90,27 @@ router.put('/:id', async (req, res) => {
       const updatedBasket = await Basket.findByPk(req.params.id);
       res.json(updatedBasket);
     } else {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating basket', error });
+    res.status(500).json({ message: "Error updating basket", error });
   }
 });
 
 // Delete a basket by ID
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const deleted = await Basket.destroy({
       where: { id: req.params.id },
     });
 
     if (deleted) {
-      res.status(204).json({ message: 'Basket deleted' });
+      res.status(204).json({ message: "Basket deleted" });
     } else {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting basket', error });
+    res.status(500).json({ message: "Error deleting basket", error });
   }
 });
 ```
@@ -111,17 +124,17 @@ For the rest of the routes you will have to implement different methods to be ab
 Register the new route files for each resource in your `app.js`:
 
 ```javascript
-const basketsRouter = require('./routes/baskets');
-const itemsRouter = require('./routes/items');
-const usersRouter = require('./routes/users');
-const ordersRouter = require('./routes/orders');
+const basketsRouter = require("./routes/baskets");
+const itemsRouter = require("./routes/items");
+const usersRouter = require("./routes/users");
+const ordersRouter = require("./routes/orders");
 
 // ...
 
-app.use('/baskets', basketsRouter);
-app.use('/items', itemsRouter);
-app.use('/users', usersRouter);
-app.use('/orders', ordersRouter);
+app.use("/baskets", basketsRouter);
+app.use("/items", itemsRouter);
+app.use("/users", usersRouter);
+app.use("/orders", ordersRouter);
 ```
 
 **Step 5.4: Protect API routes with authentication**
@@ -133,25 +146,27 @@ Create a new directory called `middlewares/` and add a file `auth.js` to it and 
 `middlewares/auth.js`
 
 ```javascript
-const passport = require('passport');
+const passport = require("passport");
 
 function authenticate(req, res, next) {
-    passport.authenticate('local', (error, user) => {
-        if (error) {
-            return next(error);
-        }
+  passport.authenticate("local", (error, user) => {
+    if (error) {
+      return next(error);
+    }
 
-        if(!user) {
-            return res.status(401).json({ message: 'Incorrect username or password.' })
-        }
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Incorrect username or password." });
+    }
 
-        req.logIn(user, (error) => {
-            if(error) {
-                return next(error);
-            }
-            next()
-        });
-    })(req,res,next);
+    req.logIn(user, (error) => {
+      if (error) {
+        return next(error);
+      }
+      next();
+    });
+  })(req, res, next);
 }
 
 module.exports = { authenticate };
@@ -160,11 +175,11 @@ module.exports = { authenticate };
 Now, import the `authenticate` middleware in your resource route files and use it to protect the routes:
 
 ```javascript
-const { authenticate } = require('../middlewares/auth');
+const { authenticate } = require("../middlewares/auth");
 
 // ...
 
-router.post('/', authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   // Route implementation
 });
 
